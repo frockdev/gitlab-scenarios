@@ -1,0 +1,23 @@
+include:
+  - local: gitlab-synchronized-tool/templates/frock-deploy.yaml
+  - local: gitlab-synchronized-tool/templates/only-tbd.yaml
+
+
+deploy-rc:
+  variables:
+    NAMESPACE: ${CI_PROJECT_NAME}-rc
+    APP_ENV: rc
+    CI_APP_TAG: ${CI_COMMIT_SHA}
+    APP_VERSION: rc-${CI_COMMIT_SHORT_SHA}
+  needs:
+    - job: build-rc
+      artifacts: true
+  extends:
+    - .only-RC
+    - .deploy
+  script:
+    - frock up
+  environment:
+    name: rc/rc-${CI_PROJECT_NAME}
+    url: https://${CI_PROJECT_NAME}-rpc-rc.${MAIN_DOMAIN}
+    action: start

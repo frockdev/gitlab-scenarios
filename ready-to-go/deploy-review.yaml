@@ -1,0 +1,37 @@
+include:
+  - local: gitlab-synchronized-tool/templates/frock-deploy.yaml
+  - local: gitlab-synchronized-tool/templates/only-tbd.yaml
+
+
+deploy-review:
+  script:
+    - frock up
+  extends:
+    - .only-REVIEW
+    - .deploy
+  variables:
+    NAMESPACE: ${CI_PROJECT_NAME}-${CI_COMMIT_REF_SLUG}
+    APP_ENV: review
+    APP_VERSION: review-${CI_COMMIT_REF_SLUG}
+    CI_APP_TAG: ${CI_COMMIT_REF_SLUG}
+    REVIEW_HOST_PREFIX: ${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}-
+  needs:
+    - build-review
+  environment:
+    action: start
+    url: https://${HOST_PREFIX}${CI_PROJECT_NAME}-rpc.${MAIN_DOMAIN}
+    name: review/${CI_COMMIT_REF_SLUG}-${CI_PROJECT_NAME}
+    auto_stop_in: 5m
+
+stop-review:
+  extends:
+    - .stop
+    - .only-REVIEW-manual
+  needs:
+    - deploy-review
+  variables:
+    NAMESPACE: ${CI_PROJECT_NAME}-${CI_COMMIT_REF_SLUG}
+    APP_ENV: review
+  environment:
+    action: stop
+    name: review/${CI_COMMIT_REF_SLUG}-${CI_PROJECT_NAME}

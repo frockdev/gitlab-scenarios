@@ -1,0 +1,15 @@
+include:
+  - local: gitlab-synchronized-tool/templates/simple-build.yaml
+  - local: gitlab-synchronized-tool/templates/only-tbd.yaml
+
+build-review:
+  variables:
+    BUILD_TAG: ${CI_COMMIT_REF_SLUG}
+  extends:
+    - .build
+    - .only-REVIEW-manual
+  script:
+    - docker pull ${LOCAL_IMAGE_FOR_BUILD}
+    - docker pull ${BASE_IMAGE_FOR_BUILD}
+    - docker build --file Dockerfile --build-arg LOCAL_IMAGE=$LOCAL_IMAGE_FOR_BUILD --build-arg BASE_IMAGE=$BASE_IMAGE_FOR_BUILD --tag ${APP_IMAGE_NAME}:${BUILD_TAG} --target production .
+    - docker push ${APP_IMAGE_NAME}:${BUILD_TAG}
