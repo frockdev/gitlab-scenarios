@@ -7,13 +7,11 @@
     IMAGE_PULL_SECRET_USERNAME: ${CI_REGISTRY_CUSTOM_USER}
     IMAGE_PULL_SECRET_PASSWORD: ${CI_REGISTRY_CUSTOM_PASSWORD}
     IMAGE_PULL_SECRET_REGISTRY: ${CI_REGISTRY_CUSTOM_REGISTRY}
+    KUBECONFIG: ${KUBECONFIG_FILE}
   tags:
     - docker-v2
   image: vladitot/k8s-devspace:latest
   before_script:
-    - touch KUBECONFIG
-    - export KUBECONFIG=`pwd`/KUBECONFIG
-    - echo ${stage_aws_kubeconfig} | base64 -d > `pwd`/KUBECONFIG
     - echo ${REDEFINED} > values/overrides.values.yaml
     - echo "" >> values/overrides.values.yaml
     - >
@@ -29,13 +27,9 @@
     NAMESPACE: NONE_NONE
     APP_ENV: NONE
     TTY_DISABLED: "true"
+    KUBECONFIG: ${KUBECONFIG_FILE}
   tags:
     - docker-v2
   image: vladitot/k8s-devspace:latest
-  before_script:
-    - touch KUBECONFIG
-    - export KUBECONFIG=`pwd`/KUBECONFIG
-    - echo ${stage_aws_kubeconfig} | base64 -d > `pwd`/KUBECONFIG
-    - export YQ_RUNNER=yq # because default is docker
   script:
     - frock down
