@@ -1,0 +1,20 @@
+.build:
+  variables:
+    APP_IMAGE_NAME: ${CI_REGISTRY_CUSTOM_REGISTRY}/${CI_PROJECT_PATH}/application
+    LOCAL_IMAGE_FOR_BUILD: vladitot/php83-swow-ubuntu-local
+    BASE_IMAGE_FOR_BUILD: vladitot/php83-swow-ubuntu-base
+    BUILD_TAG: ${CI_COMMIT_SHA}
+    KUBECONFIG: ${KUBECONFIG_FILE}
+  tags:
+    - k8s
+  stage: build
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [ "" ]
+  script:
+    - mkdir -p /kaniko/.docker
+    - echo '{"auths":{"$CI_REGISTRY_CUSTOM_REGISTRY":{"username":"$CI_REGISTRY_USER","password":"$CI_REGISTRY_PASSWORD"}}}' > /kaniko/.docker/config.json
+    - /kaniko/executor
+      --context "${CI_PROJECT_DIR}/php"  
+      --dockerfile "${CI_PROJECT_DIR}/php/Dockerfile"
+      --destination "${APP_IMAGE_NAME}:${BUILD_TAG}"
