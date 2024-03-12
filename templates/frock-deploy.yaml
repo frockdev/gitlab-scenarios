@@ -12,6 +12,7 @@
     - docker-v2
   image: vladitot/k8s-devspace:latest
   before_script:
+    - export KUBECONFIG="${KUBECONFIG_FILE}"
     - echo ${REDEFINED} > values/overrides.values.yaml
     - echo "" >> values/overrides.values.yaml
     - >
@@ -31,5 +32,7 @@
   tags:
     - docker-v2
   image: vladitot/k8s-devspace:latest
+  before_script:
+    - export KUBECONFIG="${KUBECONFIG_FILE}"
   script:
     - frock down
