@@ -10,7 +10,7 @@
     KUBECONFIG: ${KUBECONFIG_FILE}
   tags:
     - docker-v2
-  image: vladitot/k8s-devspace:latest
+  image: vladitot/frock-cli:v0.1.51
   before_script:
     - export KUBECONFIG="${KUBECONFIG_FILE}"
     - echo ${REDEFINED} > values/overrides.values.yaml
@@ -31,7 +31,7 @@
     KUBECONFIG: ${KUBECONFIG_FILE}
   tags:
     - docker-v2
-  image: vladitot/k8s-devspace:latest
+  image: vladitot/frock-cli:v0.1.51
   before_script:
     - export KUBECONFIG="${KUBECONFIG_FILE}"
   script:
