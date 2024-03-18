@@ -1,0 +1,27 @@
+include:
+  - local: gitlab-synchronized-tool/templates/simple-testing.yaml
+  - local: gitlab-synchronized-tool/templates/only-tbd.yaml
+
+
+tests-review:
+  extends:
+    - .testing
+    - .only-REVIEW
+  script:
+    - frock run-tests
+
+
+#codestyle:
+#  extends:
+#    - .testing
+#    - .only-REVIEW
+#  script:
+#    - frock run-codestyle
+#
+#
+#larastan:
+#  extends:
+#    - .testing
+#    - .only-REVIEW
+#  script:
+#    - frock run-larastan

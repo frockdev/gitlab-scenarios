@@ -13,3 +13,16 @@ build-review:
     - docker pull ${BASE_IMAGE_FOR_BUILD}
     - docker build --file Dockerfile --build-arg LOCAL_IMAGE=$LOCAL_IMAGE_FOR_BUILD --build-arg BASE_IMAGE=$BASE_IMAGE_FOR_BUILD --tag ${APP_IMAGE_NAME}:${BUILD_TAG} --target production .
     - docker push ${APP_IMAGE_NAME}:${BUILD_TAG}
+
+build-test-image-review:
+  variables:
+    BUILD_TAG: ${CI_COMMIT_SHA}
+  extends:
+    - .build
+    - .only-REVIEW
+  stage: build-test-image
+  script:
+    - docker pull ${LOCAL_IMAGE_FOR_BUILD}
+    - docker pull ${BASE_IMAGE_FOR_BUILD}
+    - docker build --file Dockerfile --build-arg LOCAL_IMAGE=$LOCAL_IMAGE_FOR_BUILD --build-arg BASE_IMAGE=$LOCAL_IMAGE_FOR_BUILD --tag ${APP_IMAGE_NAME}-tests:${BUILD_TAG} --target testing .
+    - docker push ${APP_IMAGE_NAME}-tests:${BUILD_TAG}
