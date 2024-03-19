@@ -4,24 +4,24 @@ include:
 
 
 tests-rc:
+  variables:
+    COMMAND: "frock run-tests"
   extends:
     - .testing
     - .only-RC
-  script:
-    - frock run-tests
 
 
-#codestyle:
-#  extends:
-#    - .testing
-#    - .only-REVIEW
-#  script:
-#    - frock run-codestyle
-#
-#
-#larastan:
-#  extends:
-#    - .testing
-#    - .only-REVIEW
-#  script:
-#    - frock run-larastan
+codestyle:
+  variables:
+    COMMAND: "frock fixer-dry"
+  extends:
+    - .testing
+    - .only-RC
+
+
+larastan:
+  variables:
+    COMMAND: "frock stan"
+  extends:
+    - .testing
+    - .only-RC

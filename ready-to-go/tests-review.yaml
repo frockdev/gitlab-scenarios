@@ -3,25 +3,25 @@ include:
   - local: gitlab-synchronized-tool/templates/only-tbd.yaml
 
 
-tests-review:
+tests-rc:
+  variables:
+    COMMAND: "frock run-tests"
   extends:
     - .testing
     - .only-REVIEW
-  script:
-    - frock run-tests
 
 
-#codestyle:
-#  extends:
-#    - .testing
-#    - .only-REVIEW
-#  script:
-#    - frock run-codestyle
-#
-#
-#larastan:
-#  extends:
-#    - .testing
-#    - .only-REVIEW
-#  script:
-#    - frock run-larastan
+codestyle:
+  variables:
+    COMMAND: "frock fixer-dry"
+  extends:
+    - .testing
+    - .only-REVIEW
+
+
+larastan:
+  variables:
+    COMMAND: "frock stan"
+  extends:
+    - .testing
+    - .only-REVIEW
