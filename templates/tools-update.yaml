@@ -10,5 +10,4 @@
   script:
     - git config --global user.email "robot@robot.com"
     - git config --global user.name "Robot"
-    - echo frock tools:${MODE} ${TOOL_NAME} ${GITLAB_API_URL} ${GITLAB_REPO_URL}
     - export CI_PROJECT_ID=${CI_PROJECT_ID} && frock tools:${MODE} ${TOOL_NAME} ${GITLAB_API_URL} ${GITLAB_REPO_URL}
