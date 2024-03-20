@@ -1,5 +1,6 @@
 include:
   - local: gitlab-synchronized-tool/templates/only-tbd.yaml
+  - local: gitlab-synchronized-tool/templates/simple-build.yaml
 
 build-review:
   variables:
