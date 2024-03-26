@@ -11,6 +11,7 @@ build-review:
 build-test-image-review:
   variables:
     BUILD_TAG: ${CI_COMMIT_SHA}
+    APP_IMAGE_NAME: ${CI_REGISTRY_CUSTOM_REGISTRY}/${CI_PROJECT_PATH}/application-tests
     BUILD_TARGET: testing
   extends:
     - .build
