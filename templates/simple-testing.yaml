@@ -20,6 +20,7 @@
     - echo "Setting up the environment..."
     - export KUBECONFIG=${KUBECONFIG_FILE}
     - export TTY_DISABLED=${TTY_DISABLED}
+    - frock down -vvv || true
     - frock up -vvv
     - frock pwd
   retry: 2

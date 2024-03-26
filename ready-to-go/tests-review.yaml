@@ -1,9 +1,8 @@
 include:
-  - local: gitlab-synchronized-tool/templates/simple-testing.yaml
   - local: gitlab-synchronized-tool/templates/only-tbd.yaml
 
 
-tests-rc:
+tests-review:
   variables:
     RANCHER_TOKEN: ${RANCHER_RC_TOKEN}
     RANCHER_URL: ${RANCHER_RC_URL}
@@ -15,7 +14,7 @@ tests-rc:
     - .only-REVIEW
 
 
-codestyle-rc:
+codestyle-review:
   variables:
     RANCHER_TOKEN: ${RANCHER_RC_TOKEN}
     RANCHER_URL: ${RANCHER_RC_URL}
@@ -27,7 +26,7 @@ codestyle-rc:
     - .only-REVIEW
 
 
-larastan-rc:
+larastan-review:
   variables:
     RANCHER_TOKEN: ${RANCHER_RC_TOKEN}
     RANCHER_URL: ${RANCHER_RC_URL}

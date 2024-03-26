@@ -1,5 +1,4 @@
 include:
-  - local: gitlab-synchronized-tool/templates/frock-deploy.yaml
   - local: gitlab-synchronized-tool/templates/only-tbd.yaml
 
 

@@ -1,5 +1,4 @@
 include:
-  - local: gitlab-synchronized-tool/templates/simple-testing.yaml
   - local: gitlab-synchronized-tool/templates/only-tbd.yaml
 
 
