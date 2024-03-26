@@ -1,0 +1,39 @@
+include:
+  - local: gitlab-synchronized-tool/templates/simple-testing.yaml
+  - local: gitlab-synchronized-tool/templates/only-tbd.yaml
+
+
+tests-prod:
+  variables:
+    RANCHER_TOKEN: ${RANCHER_PROD_TOKEN}
+    RANCHER_URL: ${RANCHER_PROD_URL}
+    RANCHER_PROJECT_ID: ${RANCHER_PROD_PROJECT_ID}
+    RANCHER_CLUSTER_ID: ${RANCHER_PROD_CLUSTER_ID}
+    COMMAND: "frock run-tests"
+  extends:
+    - .testing
+    - .only-PROD
+
+
+codestyle-prod:
+  variables:
+    RANCHER_TOKEN: ${RANCHER_PROD_TOKEN}
+    RANCHER_URL: ${RANCHER_PROD_URL}
+    RANCHER_PROJECT_ID: ${RANCHER_PROD_PROJECT_ID}
+    RANCHER_CLUSTER_ID: ${RANCHER_PROD_CLUSTER_ID}
+    COMMAND: "frock fixer-dry"
+  extends:
+    - .testing
+    - .only-PROD
+
+
+larastan-prod:
+  variables:
+    RANCHER_TOKEN: ${RANCHER_PROD_TOKEN}
+    RANCHER_URL: ${RANCHER_PROD_URL}
+    RANCHER_PROJECT_ID: ${RANCHER_PROD_PROJECT_ID}
+    RANCHER_CLUSTER_ID: ${RANCHER_PROD_CLUSTER_ID}
+    COMMAND: "frock stan"
+  extends:
+    - .testing
+    - .only-PROD

@@ -1,0 +1,27 @@
+include:
+  - local: gitlab-synchronized-tool/templates/frock-deploy.yaml
+  - local: gitlab-synchronized-tool/templates/only-tbd.yaml
+
+
+deploy-prod:
+  variables:
+    NAMESPACE: ${CI_PROJECT_NAME}-prod
+    APP_ENV: prod
+    CI_APP_TAG: ${CI_COMMIT_SHA}
+    APP_VERSION: prod-${CI_COMMIT_SHORT_SHA}
+    KUBECONFIG: ${KUBECONFIG_FILE_PROD}
+    RANCHER_TOKEN: ${RANCHER_PROD_TOKEN}
+    RANCHER_URL: ${RANCHER_PROD_URL}
+    RANCHER_PROJECT_ID: ${RANCHER_PROD_PROJECT_ID}
+    RANCHER_CLUSTER_ID: ${RANCHER_PROD_CLUSTER_ID}
+  needs:
+    - build-prod
+  extends:
+    - .only-PROD
+    - .deploy
+  script:
+    - frock up
+  environment:
+    name: prod/prod-${CI_PROJECT_NAME}
+    url: https://${CI_PROJECT_NAME}-rpc-prod.${MAIN_DOMAIN}
+    action: start
