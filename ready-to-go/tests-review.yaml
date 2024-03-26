@@ -5,22 +5,34 @@ include:
 
 tests-rc:
   variables:
+    RANCHER_TOKEN: ${RANCHER_RC_TOKEN}
+    RANCHER_URL: ${RANCHER_RC_URL}
+    RANCHER_PROJECT_ID: ${RANCHER_RC_PROJECT_ID}
+    RANCHER_CLUSTER_ID: ${RANCHER_RC_CLUSTER_ID}
     COMMAND: "frock run-tests"
   extends:
     - .testing
     - .only-REVIEW
 
 
-codestyle:
+codestyle-rc:
   variables:
+    RANCHER_TOKEN: ${RANCHER_RC_TOKEN}
+    RANCHER_URL: ${RANCHER_RC_URL}
+    RANCHER_PROJECT_ID: ${RANCHER_RC_PROJECT_ID}
+    RANCHER_CLUSTER_ID: ${RANCHER_RC_CLUSTER_ID}
     COMMAND: "frock fixer-dry"
   extends:
     - .testing
     - .only-REVIEW
 
 
-larastan:
+larastan-rc:
   variables:
+    RANCHER_TOKEN: ${RANCHER_RC_TOKEN}
+    RANCHER_URL: ${RANCHER_RC_URL}
+    RANCHER_PROJECT_ID: ${RANCHER_RC_PROJECT_ID}
+    RANCHER_CLUSTER_ID: ${RANCHER_RC_CLUSTER_ID}
     COMMAND: "frock stan"
   extends:
     - .testing

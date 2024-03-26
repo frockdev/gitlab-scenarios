@@ -10,7 +10,7 @@
   stage: build
   allow_failure: false
   tags:
-    - docker-v2
+    - ${RUNNER_BUILD_TAG}
   services:
     - name: docker:dind
       entrypoint: [ "sh", "-c", "dockerd-entrypoint.sh $DOCKER_DAEMON_OPTIONS" ]

@@ -1,6 +1,5 @@
 include:
   - local: gitlab-synchronized-tool/templates/only-tbd.yaml
-  - local: gitlab-synchronized-tool/templates/simple-build.yaml
 
 build-rc:
   stage: build
@@ -15,12 +14,8 @@ build-rc:
 build-test-image-rc:
   variables:
     BUILD_TAG: ${CI_COMMIT_SHA}
+    BUILD_TARGET: testing
   extends:
     - .build
     - .only-RC
   stage: build-test-image
-  script:
-    - docker pull ${LOCAL_IMAGE_FOR_BUILD}
-    - docker pull ${BASE_IMAGE_FOR_BUILD}
-    - docker build --file Dockerfile --build-arg LOCAL_IMAGE=$LOCAL_IMAGE_FOR_BUILD --build-arg BASE_IMAGE=$LOCAL_IMAGE_FOR_BUILD --tag ${APP_IMAGE_NAME}-tests:${BUILD_TAG} --target testing .
-    - docker push ${APP_IMAGE_NAME}-tests:${BUILD_TAG}

@@ -13,20 +13,20 @@
     WAIT_HELM_DEPLOY: "true"
     COMMAND: "pwd"
   tags:
-    - docker-v2
+    - ${RUNNER_BUILD_TAG}
   image: ${FROCK_CLI_IMAGE}
   stage: testing
   before_script:
     - echo "Setting up the environment..."
     - export KUBECONFIG=${KUBECONFIG_FILE}
     - export TTY_DISABLED=${TTY_DISABLED}
-    - frock up
+    - frock up -vvv
     - frock pwd
   retry: 2
   script:
     - echo ${COMMAND} > run.sh && chmod +x run.sh && ./run.sh && rm -rf ./run.sh
     - echo "Cleaning up the environment..."
-    - frock down
+    - frock down -vvv
   after_script:
     - export KUBECONFIG=${KUBECONFIG_FILE}
-    - frock down
+    - frock down -vvv

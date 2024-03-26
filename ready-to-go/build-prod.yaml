@@ -1,18 +1,21 @@
 include:
   - local: gitlab-synchronized-tool/templates/only-tbd.yaml
 
-build-review:
+build-prod:
+  stage: build
   variables:
-    BUILD_TAG: ${CI_COMMIT_REF_SLUG}
+    BASE_IMAGE: vladitot/php83-swow-ubuntu-base
+  needs:
+    - tests-prod
   extends:
+    - .only-PROD
     - .build
-    - .only-REVIEW-manual
 
-build-test-image-review:
+build-test-image-prod:
   variables:
     BUILD_TAG: ${CI_COMMIT_SHA}
     BUILD_TARGET: testing
   extends:
     - .build
-    - .only-REVIEW
+    - .only-PROD
   stage: build-test-image

@@ -8,11 +8,14 @@
     IMAGE_PULL_SECRET_PASSWORD: ${CI_REGISTRY_CUSTOM_PASSWORD}
     IMAGE_PULL_SECRET_REGISTRY: ${CI_REGISTRY_CUSTOM_REGISTRY}
     KUBECONFIG: ${KUBECONFIG_FILE}
+    RANCHER_TOKEN: ${RANCHER_RC_TOKEN}
+    RANCHER_URL: ${RANCHER_RC_URL}
+    RANCHER_PROJECT_ID: ${RANCHER_RC_PROJECT_ID}
+    RANCHER_CLUSTER_ID: ${RANCHER_RC_CLUSTER_ID}
   tags:
-    - docker-v2
+    - ${RUNNER_DEPLOY_TAG}
   image: ${FROCK_CLI_IMAGE}
   before_script:
-    - export KUBECONFIG="${KUBECONFIG_FILE}"
     - echo ${REDEFINED} > values/overrides.values.yaml
     - echo "" >> values/overrides.values.yaml
     - >
@@ -30,9 +33,7 @@
     TTY_DISABLED: "true"
     KUBECONFIG: ${KUBECONFIG_FILE}
   tags:
-    - docker-v2
+    - ${RUNNER_DEPLOY_TAG}
   image: ${FROCK_CLI_IMAGE}
-  before_script:
-    - export KUBECONFIG="${KUBECONFIG_FILE}"
   script:
     - frock down
