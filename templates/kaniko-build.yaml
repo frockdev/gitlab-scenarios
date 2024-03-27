@@ -19,6 +19,7 @@
       --context "${CI_PROJECT_DIR}"  
       --dockerfile "${CI_PROJECT_DIR}/Dockerfile"
       --destination "${APP_IMAGE_NAME}:${BUILD_TAG}"
+      --cache
       --build-arg LOCAL_IMAGE="${LOCAL_IMAGE_FOR_BUILD}"
       --build-arg BASE_IMAGE="${BASE_IMAGE_FOR_BUILD}"
       --target "${BUILD_TARGET}"

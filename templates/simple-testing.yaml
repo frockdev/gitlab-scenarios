@@ -20,14 +20,14 @@
     - echo "Setting up the environment..."
     - export KUBECONFIG=${KUBECONFIG_FILE}
     - export TTY_DISABLED=${TTY_DISABLED}
-    - frock down -vvv || true
-    - frock up -vvv
+    - frock down || true
+    - frock up
     - frock pwd
-  retry: 2
+#  retry: 2
   script:
     - echo ${COMMAND} > run.sh && chmod +x run.sh && ./run.sh && rm -rf ./run.sh
     - echo "Cleaning up the environment..."
-    - frock down -vvv
+    - frock down
   after_script:
     - export KUBECONFIG=${KUBECONFIG_FILE}
-    - frock down -vvv
+    - frock down
