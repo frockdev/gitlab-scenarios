@@ -3,10 +3,10 @@ include:
 
 build-review:
   variables:
-    BUILD_TAG: ${CI_COMMIT_REF_SLUG}
+    BUILD_TAG: ${CI_COMMIT_SHA}
   extends:
     - .build
-    - .only-REVIEW-manual
+    - .only-REVIEW
 
 build-test-image-review:
   variables:
