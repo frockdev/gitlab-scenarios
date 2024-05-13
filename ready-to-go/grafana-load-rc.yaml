@@ -1,0 +1,51 @@
+variables:
+  GRAFANA_MAIN_URL: ${GRAFANA_MAIN_URL_RC}
+  GRAFANA_USER: ${GRAFANA_USER_RC}
+  GRAFANA_PASSWORD: ${GRAFANA_PASSWORD_RC}
+
+grafana-prepare:
+  extends:
+    - .grafana-prepare
+    - .only-RC
+  needs: []
+
+
+grafana-validate:
+  extends:
+    - .grafana-validate
+    - .only-RC
+  needs:
+    - job: grafana-prepare
+      artifacts: true
+
+grafana-build:
+  extends:
+    - .grafana-build
+    - .only-RC
+  needs:
+    - job: grafana-prepare
+      artifacts: true
+    - job: build-rc
+      artifacts: true
+
+grafana-deploy:
+  extends:
+      - .grafana-deploy
+      - .only-RC
+  needs:
+    - job: grafana-prepare
+      artifacts: true
+    - job: build-rc
+      artifacts: true
+    - job: grafana-build
+      artifacts: true
+
+grafana-terraform:destroy:
+  extends:
+      - .grafana-terraform:destroy
+      - .only-RC-manual
+  needs:
+    - job: grafana-prepare
+      artifacts: true
+    - job: grafana-deploy
+      artifacts: true
