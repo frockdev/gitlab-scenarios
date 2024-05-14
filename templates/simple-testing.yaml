@@ -20,13 +20,19 @@
     - export KUBECONFIG=${KUBECONFIG_FILE}
     - export TTY_DISABLED=${TTY_DISABLED}
     - frock down || true
+    - kubectl patch ns ${NAMESPACE} -p '{"metadata":{"finalizers":null}}' || true
+    - kubectl delete namespace ${NAMESPACE} || true
     - frock up
-    - frock pwd
 #  retry: 2
   script:
-    - echo ${COMMAND} > run.sh && chmod +x run.sh && ./run.sh && rm -rf ./run.sh
+    - set +e
+    - echo ${COMMAND} > run.sh && chmod +x run.sh
+    - ./run.sh || EXIT_CODE=$?
+    - echo "Exite code:" $EXIT_CODE
     - echo "Cleaning up the environment..."
+    - rm -rf ./run.sh
     - frock down
+    - exit $EXIT_CODE
   after_script:
     - export KUBECONFIG=${KUBECONFIG_FILE}
     - frock down

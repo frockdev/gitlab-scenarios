@@ -1,0 +1,115 @@
+variables:
+  TF_ROOT: grafana/terraform
+  TF_STATE_NAME: grafana-stage
+
+image:
+  name: "$CI_TEMPLATE_REGISTRY_HOST/gitlab-org/terraform-images/releases/1.4:v1.0.0"
+
+cache:
+  key: "${TF_ROOT}"
+  paths:
+    - ${TF_ROOT}/.terraform/
+
+.terraform:fmt:
+  stage: validate
+  script:
+    - gitlab-terraform fmt
+  allow_failure: true
+
+.terraform:validate:
+  stage: validate
+  script:
+    - gitlab-terraform validate
+
+.terraform:build:
+  stage: build
+  script:
+    - gitlab-terraform plan
+    - gitlab-terraform plan-json
+  resource_group: ${TF_STATE_NAME}
+  artifacts:
+    # The next line, which disables public access to pipeline artifacts, may not be available everywhere.
+    # See: https://docs.gitlab.com/ee/ci/yaml/#artifactspublic
+    public: false
+    paths:
+      - ${TF_ROOT}/plan.cache
+    reports:
+      terraform: ${TF_ROOT}/plan.json
+
+.terraform:deploy:
+  stage: deploy
+  script:
+    - gitlab-terraform apply
+  resource_group: ${TF_STATE_NAME}
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $TF_AUTO_DEPLOY == "true"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: manual
+
+.terraform:destroy:
+  stage: cleanup
+  script:
+    - gitlab-terraform destroy
+  resource_group: ${TF_STATE_NAME}
+  when: manual
+
+
+#terraform {
+#  required_providers {
+#    grafana = {
+#      source = "grafana/grafana"
+#      version = "2.18.0"
+#    }
+#  }
+#}
+.grafana-prepare:
+  stage: grafana-prepare
+  script:
+    - echo 'terraform {' > grafana/terraform/provider.tf
+    - echo '  required_providers {' >> grafana/terraform/provider.tf
+    - echo '    grafana = {' >> grafana/terraform/provider.tf
+    - echo '      source = "grafana/grafana"' >> grafana/terraform/provider.tf
+    - echo '      version = "2.18.0"' >> grafana/terraform/provider.tf
+    - echo '    }' >> grafana/terraform/provider.tf
+    - echo '  }' >> grafana/terraform/provider.tf
+    - echo '}' >> grafana/terraform/provider.tf
+    - echo 'provider "grafana" {' >> grafana/terraform/provider.tf
+    - echo url=\""${GRAFANA_MAIN_URL}"\" >> grafana/terraform/provider.tf
+    - echo auth=\""${GRAFANA_USER}:${GRAFANA_PASSWORD}"\" >> grafana/terraform/provider.tf
+    - echo '}' >> grafana/terraform/provider.tf
+  artifacts:
+    paths:
+      - grafana/terraform/provider.tf
+
+.grafana-fmt:
+  stage: grafana-validate
+  extends: .terraform:fmt
+  needs: ["grafana-prepare"]
+
+.grafana-validate:
+  stage: grafana-validate
+  extends: .terraform:validate
+  needs: ["grafana-prepare"]
+
+.grafana-build:
+  stage: grafana-build
+  extends: .terraform:build
+  needs: ["grafana-prepare"]
+  environment:
+    name: $TF_STATE_NAME
+    action: prepare
+
+.grafana-deploy:
+  stage: grafana-deploy
+  needs: ["grafana-prepare"]
+  extends: .terraform:deploy
+  environment:
+    name: $TF_STATE_NAME
+    action: start
+
+.grafana-terraform:destroy:
+  stage: grafana-cleanup
+  script:
+    - gitlab-terraform destroy
+  resource_group: ${TF_STATE_NAME}
+  when: manual
