@@ -1,0 +1,63 @@
+variables:
+  GRAFANA_MAIN_URL: ${GRAFANA_MAIN_URL_PROD}
+  GRAFANA_USER: ${GRAFANA_USER_PROD}
+  GRAFANA_PASSWORD: ${GRAFANA_PASSWORD_PROD}
+
+grafana-prepare-prod:
+  variables:
+    GRAFANA_MAIN_URL: ${GRAFANA_MAIN_URL_PROD}
+    GRAFANA_ORG_ID: ${GRAFANA_ORG_ID_PROD}
+    FULL_ADDRESS_TO_TF_STATE: ${TF_STATE_PROD_ADDRESS}
+  extends:
+    - .grafana-prepare
+    - .only-PROD
+  needs: []
+
+
+grafana-validate-prod:
+  variables:
+    FULL_ADDRESS_TO_TF_STATE: ${TF_STATE_PROD_ADDRESS}
+  extends:
+    - .grafana-validate
+    - .only-PROD
+  needs:
+    - job: grafana-prepare-prod
+      artifacts: true
+
+grafana-build-prod:
+  variables:
+    FULL_ADDRESS_TO_TF_STATE: ${TF_STATE_PROD_ADDRESS}
+  extends:
+    - .grafana-build
+    - .only-PROD
+  needs:
+    - job: grafana-prepare-prod
+      artifacts: true
+    - job: build-prod
+      artifacts: true
+
+grafana-deploy-prod:
+  variables:
+    FULL_ADDRESS_TO_TF_STATE: ${TF_STATE_PROD_ADDRESS}
+  extends:
+      - .grafana-deploy
+      - .only-PROD
+  needs:
+    - job: grafana-prepare-prod
+      artifacts: true
+    - job: build-prod
+      artifacts: true
+    - job: grafana-build-prod
+      artifacts: true
+
+grafana-terraform:destroy-prod:
+  variables:
+    FULL_ADDRESS_TO_TF_STATE: ${TF_STATE_PROD_ADDRESS}
+  extends:
+      - .grafana-terraform:destroy
+      - .only-PROD-manual
+  needs:
+    - job: grafana-prepare-prod
+      artifacts: true
+    - job: grafana-deploy-prod
+      artifacts: true

@@ -8,9 +8,21 @@ build-prod:
     BUILD_TAG: ${CI_COMMIT_TAG}
   needs:
     - tests-prod
+    - codestyle-prod
+#    - larastan-prod
   extends:
     - .only-PROD
     - .build
+
+#build-prod-manual:
+#  stage: build
+#  variables:
+#    BASE_IMAGE: vladitot/php83-swow-ubuntu-base
+#    BUILD_TAG: ${CI_COMMIT_TAG}
+#  needs: []
+#  extends:
+#    - .only-PROD-manual
+#    - .build
 
 build-test-image-prod:
   variables:

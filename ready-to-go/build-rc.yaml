@@ -7,6 +7,8 @@ build-rc:
     BASE_IMAGE: vladitot/php83-swow-ubuntu-base
   needs:
     - tests-rc
+    - codestyle-rc
+#    - larastan-rc
   extends:
     - .only-RC
     - .build

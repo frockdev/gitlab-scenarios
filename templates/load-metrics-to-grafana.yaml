@@ -1,0 +1,91 @@
+# List of variables
+variables:
+  TF_DIR: ${CI_PROJECT_DIR}/grafana/terraform       # Directory in which terraform files are kept
+
+.grafana-prepare:
+  variables:
+    GRAFANA_ORG_ID: 1
+  stage: grafana-prepare
+  script:
+    - echo 'terraform {' > grafana/terraform/provider.tf
+    - echo 'backend "http" {}' >> grafana/terraform/provider.tf
+    - echo '  required_providers {' >> grafana/terraform/provider.tf
+    - echo '    grafana = {' >> grafana/terraform/provider.tf
+    - echo '      source = "grafana/grafana"' >> grafana/terraform/provider.tf
+    - echo '      version = "2.19.0"' >> grafana/terraform/provider.tf
+    - echo '    }' >> grafana/terraform/provider.tf
+    - echo '  }' >> grafana/terraform/provider.tf
+    - echo '}' >> grafana/terraform/provider.tf
+    - echo 'provider "grafana" {' >> grafana/terraform/provider.tf
+    - echo url=\""${GRAFANA_MAIN_URL}"\" >> grafana/terraform/provider.tf
+    - echo auth=\""${GRAFANA_USER}:${GRAFANA_PASSWORD}"\" >> grafana/terraform/provider.tf
+    - echo '}' >> grafana/terraform/provider.tf
+    - echo 'variable "org_id" {' >> grafana/terraform/provider.tf
+    - echo '  type = number' >> grafana/terraform/provider.tf
+    - echo default=${GRAFANA_ORG_ID} >> grafana/terraform/provider.tf
+    - echo '}' >> grafana/terraform/provider.tf
+    - cat grafana/terraform/provider.tf
+  artifacts:
+    paths:
+      - grafana/terraform/provider.tf
+
+
+# To validate terraform files configuration
+.grafana-validate:
+  # Script to be executed before each stage
+  before_script:
+    - terraform --version
+    - export GITLAB_ACCESS_TOKEN=$GITLAB_API_KEY
+    - cd ${TF_DIR}            # To get inside the working directory
+    - terraform init -reconfigure -backend-config="address=${FULL_ADDRESS_TO_TF_STATE}" -backend-config="lock_address=${FULL_ADDRESS_TO_TF_STATE}/lock" -backend-config="unlock_address=${FULL_ADDRESS_TO_TF_STATE}/lock" -backend-config="username=${GITLAB_TERRAFORM_API_USERNAME}" -backend-config="password=${GITLAB_ACCESS_TOKEN}" -backend-config="lock_method=POST" -backend-config="unlock_method=DELETE" -backend-config="retry_wait_min=5"
+  stage: grafana-validate
+  image:
+    name: hashicorp/terraform:light
+    entrypoint: [ "" ]
+  script:
+    - terraform validate
+
+# To check the plan of the infrastructure
+.grafana-build:
+  # Script to be executed before each stage
+  before_script:
+    - terraform --version
+    - export GITLAB_ACCESS_TOKEN=$GITLAB_API_KEY
+    - cd ${TF_DIR}            # To get inside the working directory
+    - terraform init -reconfigure -backend-config="address=${FULL_ADDRESS_TO_TF_STATE}" -backend-config="lock_address=${FULL_ADDRESS_TO_TF_STATE}/lock" -backend-config="unlock_address=${FULL_ADDRESS_TO_TF_STATE}/lock" -backend-config="username=${GITLAB_TERRAFORM_API_USERNAME}" -backend-config="password=${GITLAB_ACCESS_TOKEN}" -backend-config="lock_method=POST" -backend-config="unlock_method=DELETE" -backend-config="retry_wait_min=5"
+  stage: grafana-build
+  image:
+    name: hashicorp/terraform:light
+    entrypoint: [ "" ]
+  script:
+    - terraform plan
+
+# To create infrastructure on AWS
+.grafana-deploy:
+  # Script to be executed before each stage
+  before_script:
+    - terraform --version
+    - export GITLAB_ACCESS_TOKEN=$GITLAB_API_KEY
+    - cd ${TF_DIR}            # To get inside the working directory
+    - terraform init -reconfigure -backend-config="address=${FULL_ADDRESS_TO_TF_STATE}" -backend-config="lock_address=${FULL_ADDRESS_TO_TF_STATE}/lock" -backend-config="unlock_address=${FULL_ADDRESS_TO_TF_STATE}/lock" -backend-config="username=${GITLAB_TERRAFORM_API_USERNAME}" -backend-config="password=${GITLAB_ACCESS_TOKEN}" -backend-config="lock_method=POST" -backend-config="unlock_method=DELETE" -backend-config="retry_wait_min=5"
+  stage: grafana-deploy
+  image:
+    name: hashicorp/terraform:light
+    entrypoint: [ "" ]
+  script:
+    - terraform apply  -auto-approve
+
+# To destroy infrastructure on cloud. It needs manual approval
+.grafana-terraform:destroy:
+  # Script to be executed before each stage
+  before_script:
+    - terraform --version
+    - export GITLAB_ACCESS_TOKEN=$GITLAB_API_KEY
+    - cd ${TF_DIR}            # To get inside the working directory
+    - terraform init -reconfigure -backend-config="address=${FULL_ADDRESS_TO_TF_STATE}" -backend-config="lock_address=${FULL_ADDRESS_TO_TF_STATE}/lock" -backend-config="unlock_address=${FULL_ADDRESS_TO_TF_STATE}/lock" -backend-config="username=${GITLAB_TERRAFORM_API_USERNAME}" -backend-config="password=${GITLAB_ACCESS_TOKEN}" -backend-config="lock_method=POST" -backend-config="unlock_method=DELETE" -backend-config="retry_wait_min=5"
+  stage: grafana-cleanup
+  image:
+    name: hashicorp/terraform:light
+    entrypoint: [ "" ]
+  script:
+    - terraform destroy  -auto-approve
