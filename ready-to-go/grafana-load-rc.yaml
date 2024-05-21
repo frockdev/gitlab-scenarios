@@ -4,6 +4,10 @@ variables:
   GRAFANA_PASSWORD: ${GRAFANA_PASSWORD_RC}
 
 grafana-prepare:
+  variables:
+    GRAFANA_MAIN_URL: ${GRAFANA_MAIN_URL_RC}
+    GRAFANA_ORG_ID: ${GRAFANA_ORG_ID_RC}
+    FULL_ADDRESS_TO_TF_STATE: ${TF_STATE_RC_ADDRESS}
   extends:
     - .grafana-prepare
     - .only-RC
@@ -11,6 +15,8 @@ grafana-prepare:
 
 
 grafana-validate:
+  variables:
+    FULL_ADDRESS_TO_TF_STATE: ${TF_STATE_RC_ADDRESS}
   extends:
     - .grafana-validate
     - .only-RC
@@ -19,6 +25,8 @@ grafana-validate:
       artifacts: true
 
 grafana-build:
+  variables:
+    FULL_ADDRESS_TO_TF_STATE: ${TF_STATE_RC_ADDRESS}
   extends:
     - .grafana-build
     - .only-RC
@@ -29,6 +37,8 @@ grafana-build:
       artifacts: true
 
 grafana-deploy:
+  variables:
+    FULL_ADDRESS_TO_TF_STATE: ${TF_STATE_RC_ADDRESS}
   extends:
       - .grafana-deploy
       - .only-RC
@@ -41,6 +51,8 @@ grafana-deploy:
       artifacts: true
 
 grafana-terraform:destroy:
+  variables:
+    FULL_ADDRESS_TO_TF_STATE: ${TF_STATE_RC_ADDRESS}
   extends:
       - .grafana-terraform:destroy
       - .only-RC-manual
