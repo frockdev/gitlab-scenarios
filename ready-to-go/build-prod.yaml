@@ -1,6 +1,9 @@
 include:
   - local: gitlab-synchronized-tool/templates/only-tbd.yaml
 
+variables:
+  CI_PROJECT_PATH_LOWERCASE: ${CI_PROJECT_PATH}
+
 build-prod:
   stage: build
   variables:
@@ -28,7 +31,7 @@ build-test-image-prod:
   variables:
     BUILD_TAG: ${CI_COMMIT_SHA}
     BUILD_TARGET: testing
-    APP_IMAGE_NAME: ${CI_REGISTRY_CUSTOM_REGISTRY}/${CI_PROJECT_PATH}/application-tests
+    APP_IMAGE_NAME: ${CI_REGISTRY_CUSTOM_REGISTRY}/${CI_PROJECT_PATH_LOWERCASE}/application-tests
   extends:
     - .build
     - .only-PROD

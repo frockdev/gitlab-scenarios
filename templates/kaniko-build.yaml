@@ -1,6 +1,9 @@
+variables:
+  CI_PROJECT_PATH_LOWERCASE: ${CI_PROJECT_PATH}
+
 .build:
   variables:
-    APP_IMAGE_NAME: ${CI_REGISTRY_CUSTOM_REGISTRY}/${CI_PROJECT_PATH}/application
+    APP_IMAGE_NAME: ${CI_REGISTRY_CUSTOM_REGISTRY}/${CI_PROJECT_PATH_LOWERCASE}/application
     LOCAL_IMAGE_FOR_BUILD: vladitot/php83-swow-ubuntu-local
     BASE_IMAGE_FOR_BUILD: vladitot/php83-swow-ubuntu-base
     BUILD_TAG: ${CI_COMMIT_SHA}
