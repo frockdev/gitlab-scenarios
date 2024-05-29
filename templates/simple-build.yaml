@@ -1,7 +1,10 @@
+variables:
+  CI_PROJECT_PATH_LOWERCASE: ${CI_PROJECT_PATH}
+
 .build:
   retry: 2
   variables:
-    APP_IMAGE_NAME: ${CI_REGISTRY_CUSTOM_REGISTRY}/${CI_PROJECT_PATH}/application
+    APP_IMAGE_NAME: ${CI_REGISTRY_CUSTOM_REGISTRY}/${CI_PROJECT_PATH_LOWERCASE}/application
     DOCKER_DAEMON_OPTIONS: "--registry-mirror=https://${REGISTRY_MIRROR}"
     LOCAL_IMAGE_FOR_BUILD: vladitot/php83-swow-ubuntu-local
     BASE_IMAGE_FOR_BUILD: vladitot/php83-swow-ubuntu-base
@@ -15,11 +18,11 @@
   services:
     - name: docker:dind
       entrypoint: [ "sh", "-c", "dockerd-entrypoint.sh $DOCKER_DAEMON_OPTIONS" ]
-  image: vladitot/docker-devspace:latest
+  image: docker:19
   before_script:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   script:
-    - docker pull ${LOCAL_IMAGE_FOR_BUILD}
-    - docker pull ${BASE_IMAGE_FOR_BUILD}
+    - docker pull ${LOCAL_IMAGE_FOR_BUILD} || true
+    - docker pull ${BASE_IMAGE_FOR_BUILD} || true
     - docker build --file Dockerfile --build-arg LOCAL_IMAGE=$LOCAL_IMAGE_FOR_BUILD --build-arg BASE_IMAGE=$BASE_IMAGE_FOR_BUILD --tag ${APP_IMAGE_NAME}:${BUILD_TAG} --target ${BUILD_TARGET} .
     - docker push ${APP_IMAGE_NAME}:${BUILD_TAG}

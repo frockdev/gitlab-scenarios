@@ -13,7 +13,7 @@ deploy-review:
     NAMESPACE: ${CI_PROJECT_NAME}-${CI_COMMIT_REF_SLUG}
     APP_ENV: review
     APP_VERSION: review-${CI_COMMIT_REF_SLUG}
-    CI_APP_TAG: ${CI_COMMIT_REF_SLUG}
+    CI_APP_TAG: ${CI_COMMIT_SHA}
     REVIEW_HOST_PREFIX: ${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}-
   needs:
     - build-review

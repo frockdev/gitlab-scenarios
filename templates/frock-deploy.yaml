@@ -7,7 +7,6 @@
     IMAGE_PULL_SECRET_USERNAME: ${CI_REGISTRY_CUSTOM_USER}
     IMAGE_PULL_SECRET_PASSWORD: ${CI_REGISTRY_CUSTOM_PASSWORD}
     IMAGE_PULL_SECRET_REGISTRY: ${CI_REGISTRY_CUSTOM_REGISTRY}
-    KUBECONFIG: ${KUBECONFIG_FILE}
     RANCHER_TOKEN: ${RANCHER_RC_TOKEN}
     RANCHER_URL: ${RANCHER_RC_URL}
     RANCHER_PROJECT_ID: ${RANCHER_RC_PROJECT_ID}
@@ -16,6 +15,7 @@
     - ${RUNNER_DEPLOY_TAG}
   image: ${FROCK_CLI_IMAGE}
   before_script:
+    - export KUBECONFIG=${KUBECONFIG_FILE}
     - echo ${REDEFINED} > values/overrides.values.yaml
     - echo "" >> values/overrides.values.yaml
     - >
@@ -36,4 +36,5 @@
     - ${RUNNER_DEPLOY_TAG}
   image: ${FROCK_CLI_IMAGE}
   script:
+    - export KUBECONFIG=${KUBECONFIG_FILE}
     - frock down

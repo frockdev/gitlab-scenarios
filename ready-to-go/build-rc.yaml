@@ -1,12 +1,17 @@
 include:
   - local: gitlab-synchronized-tool/templates/only-tbd.yaml
 
+variables:
+  CI_PROJECT_PATH_LOWERCASE: ${CI_PROJECT_PATH}
+
 build-rc:
   stage: build
   variables:
     BASE_IMAGE: vladitot/php83-swow-ubuntu-base
   needs:
     - tests-rc
+    - codestyle-rc
+#    - larastan-rc
   extends:
     - .only-RC
     - .build
@@ -14,7 +19,7 @@ build-rc:
 build-test-image-rc:
   variables:
     BUILD_TAG: ${CI_COMMIT_SHA}
-    APP_IMAGE_NAME: ${CI_REGISTRY_CUSTOM_REGISTRY}/${CI_PROJECT_PATH}/application-tests
+    APP_IMAGE_NAME: ${CI_REGISTRY_CUSTOM_REGISTRY}/${CI_PROJECT_PATH_LOWERCASE}/application-tests
     BUILD_TARGET: testing
   extends:
     - .build

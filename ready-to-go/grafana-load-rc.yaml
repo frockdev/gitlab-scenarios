@@ -1,0 +1,64 @@
+variables:
+  GRAFANA_MAIN_URL: ${GRAFANA_MAIN_URL_RC}
+  GRAFANA_USER: ${GRAFANA_USER_RC}
+  GRAFANA_PASSWORD: ${GRAFANA_PASSWORD_RC}
+  GITLAB_MAIN_DOMAIN: gitlab.com
+
+grafana-prepare:
+  variables:
+    GRAFANA_MAIN_URL: ${GRAFANA_MAIN_URL_RC}
+    GRAFANA_ORG_ID: ${GRAFANA_ORG_ID_RC}
+    FULL_ADDRESS_TO_TF_STATE: "https://${GITLAB_MAIN_DOMAIN}/api/v4/projects/${CI_PROJECT_ID}/terraform/state/grafana_state_stage"
+  extends:
+    - .grafana-prepare
+    - .only-RC
+  needs: []
+
+
+grafana-validate:
+  variables:
+    FULL_ADDRESS_TO_TF_STATE: "https://${GITLAB_MAIN_DOMAIN}/api/v4/projects/${CI_PROJECT_ID}/terraform/state/grafana_state_stage"
+  extends:
+    - .grafana-validate
+    - .only-RC
+  needs:
+    - job: grafana-prepare
+      artifacts: true
+
+grafana-build:
+  variables:
+    FULL_ADDRESS_TO_TF_STATE: "https://${GITLAB_MAIN_DOMAIN}/api/v4/projects/${CI_PROJECT_ID}/terraform/state/grafana_state_stage"
+  extends:
+    - .grafana-build
+    - .only-RC
+  needs:
+    - job: grafana-prepare
+      artifacts: true
+    - job: build-rc
+      artifacts: true
+
+grafana-deploy:
+  variables:
+    FULL_ADDRESS_TO_TF_STATE: "https://${GITLAB_MAIN_DOMAIN}/api/v4/projects/${CI_PROJECT_ID}/terraform/state/grafana_state_stage"
+  extends:
+      - .grafana-deploy
+      - .only-RC
+  needs:
+    - job: grafana-prepare
+      artifacts: true
+    - job: build-rc
+      artifacts: true
+    - job: grafana-build
+      artifacts: true
+
+grafana-terraform:destroy:
+  variables:
+    FULL_ADDRESS_TO_TF_STATE: "https://${GITLAB_MAIN_DOMAIN}/api/v4/projects/${CI_PROJECT_ID}/terraform/state/grafana_state_stage"
+  extends:
+      - .grafana-terraform:destroy
+      - .only-RC-manual
+  needs:
+    - job: grafana-prepare
+      artifacts: true
+    - job: grafana-deploy
+      artifacts: true
