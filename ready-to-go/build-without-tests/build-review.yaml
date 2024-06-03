@@ -1,0 +1,12 @@
+include:
+  - local: gitlab-synchronized-tool/templates/only-tbd.yaml
+
+variables:
+  CI_PROJECT_PATH_LOWERCASE: ${CI_PROJECT_PATH}
+
+build-review:
+  variables:
+    BUILD_TAG: ${CI_COMMIT_SHA}
+  extends:
+    - .build
+    - .only-REVIEW

@@ -1,0 +1,14 @@
+include:
+  - local: gitlab-synchronized-tool/templates/only-tbd.yaml
+
+variables:
+  CI_PROJECT_PATH_LOWERCASE: ${CI_PROJECT_PATH}
+
+build-prod:
+  stage: build
+  variables:
+    BASE_IMAGE: vladitot/php83-swow-ubuntu-base
+    BUILD_TAG: ${CI_COMMIT_TAG}
+  extends:
+    - .only-PROD
+    - .build
