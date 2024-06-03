@@ -11,11 +11,12 @@
     RANCHER_URL: ${RANCHER_RC_URL}
     RANCHER_PROJECT_ID: ${RANCHER_RC_PROJECT_ID}
     RANCHER_CLUSTER_ID: ${RANCHER_RC_CLUSTER_ID}
+    KUBECONFIG_FOR_EXPORT: ${KUBECONFIG_FILE}
   tags:
     - ${RUNNER_DEPLOY_TAG}
   image: ${FROCK_CLI_IMAGE}
   before_script:
-    - export KUBECONFIG=${KUBECONFIG_FILE}
+    - export KUBECONFIG=${KUBECONFIG_FOR_EXPORT}
     - echo ${REDEFINED} > values/overrides.values.yaml
     - echo "" >> values/overrides.values.yaml
     - >
@@ -31,10 +32,10 @@
     NAMESPACE: NONE_NONE
     APP_ENV: NONE
     TTY_DISABLED: "true"
-    KUBECONFIG: ${KUBECONFIG_FILE}
+    KUBECONFIG_FOR_EXPORT: ${KUBECONFIG_FILE}
   tags:
     - ${RUNNER_DEPLOY_TAG}
   image: ${FROCK_CLI_IMAGE}
   script:
-    - export KUBECONFIG=${KUBECONFIG_FILE}
+    - export KUBECONFIG=${KUBECONFIG_FOR_EXPORT}
     - frock down
