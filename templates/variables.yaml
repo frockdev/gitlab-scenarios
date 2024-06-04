@@ -1,3 +1,3 @@
 variables:
-  FROCK_CLI_IMAGE: vladitot/frock-cli:v0.1.105
+  FROCK_CLI_IMAGE: vladitot/frock-cli:v0.1.106
 

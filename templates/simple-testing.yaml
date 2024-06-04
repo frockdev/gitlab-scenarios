@@ -11,13 +11,22 @@
     APP_VERSION: review-testing-${CI_COMMIT_REF_SLUG}
     WAIT_HELM_DEPLOY: "true"
     COMMAND: "pwd"
+    RANCHER_TOKEN: ${RANCHER_RC_TOKEN}
+    RANCHER_URL: ${RANCHER_RC_URL}
+    RANCHER_PROJECT_ID: ${RANCHER_RC_PROJECT_ID}
+    RANCHER_CLUSTER_ID: ${RANCHER_RC_CLUSTER_ID}
+    KUBECONFIG_FOR_EXPORT: ${KUBECONFIG_FILE}
+    AWS_CLUSTER_NAME: ${AWS_CLUSTER_NAME_RC}
+    AWS_CLUSTER_REGION: ${AWS_CLUSTER_REGION_RC}
+    AWS_SECRET_ACCESS_KEY_FOR_EXPORT: ${AWS_SECRET_ACCESS_KEY_RC}
+    AWS_ACCESS_KEY_ID_FOR_EXPORT: ${AWS_ACCESS_KEY_ID_RC}
   tags:
     - ${RUNNER_BUILD_TAG}
   image: ${FROCK_CLI_IMAGE}
   stage: testing
   before_script:
     - echo "Setting up the environment..."
-    - export KUBECONFIG=${KUBECONFIG_FILE}
+    - !reference [.pre-deploy-auth, script]
     - export TTY_DISABLED=${TTY_DISABLED}
     - frock down || true
     - kubectl patch ns ${NAMESPACE} -p '{"metadata":{"finalizers":null}}' || true
@@ -34,5 +43,5 @@
     - frock down
     - exit $EXIT_CODE
   after_script:
-    - export KUBECONFIG=${KUBECONFIG_FILE}
+    - !reference [.pre-deploy-auth, script]
     - frock down
